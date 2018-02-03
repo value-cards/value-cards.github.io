@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<body>
+<style>
+* {
+  font-family: 'Roboto', Arial;
+
+}
+.card {
+  color: white;
+  background-color: DodgerBlue;
+  padding: 20px;
+  text-align: center;
+  margin: 10px;
+}
+</style>
+
+<!-- <h1>Value Cards</h1> -->
+
+<!-- <p>Filters, etc.</p> -->
+
+<template>
+  <div class="card">Title: </div>
+</template>
+
+<script>
+var myArr = [
+  "Unified Home Page",
+  "Product Warranty",
+  "Push Notifications",
+  "Product Videos",
+  "Product Variants: Colours",
+  "Multi-seller Select Display"
+];
+
+showContent();
+
+function showContent() {
+  var temp, item, a, i;
+  //get the template element:
+  temp = document.getElementsByTagName("template")[0];
+  //get the DIV element from the template:
+  item = temp.content.querySelector("div");
+  //for each item in the array:
+  for (i = 0; i < myArr.length; i++) {
+    //Create a new node, based on the template:
+    a = document.importNode(item, true);
+    //Add data from the array:
+    a.textContent += myArr[i];
+    //append the new node wherever you like:
+    document.body.appendChild(a);
+  }
+}
+</script>
+
+</body>
+</html>
