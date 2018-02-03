@@ -4,7 +4,7 @@
   <body>
     <style>
       * {
-        font-family: 'Roboto', Arial;
+        font-family: 'Roboto', 'Avenir Next', 'Avenir', 'Open Sans', Arial;
       }
       body {
         margin: 0;
@@ -82,8 +82,8 @@
           <h1>title</h1>
           <h2>description</h2>
         </div>
-        <!-- <div class="line-break"></div> -->
-        <progress value="80" max="100"></progress>
+        <div class="line-break"></div>
+        <!-- <progress value="80" max="100"></progress> -->
         <div class="table">    
           <div>
             <div class="kpi">KPI</div>
@@ -128,8 +128,8 @@
         h1.textContent = initiatives[i];
         h2 = temp.content.querySelector("h2");
         h2.textContent = descriptions[i];
-        progressBar = temp.content.querySelector("progress");
-        progressBar.value = progressValues[i];
+        // progressBar = temp.content.querySelector("progress");
+        // progressBar.value = progressValues[i];
         // Key performance indicator metrics
         kpi = temp.content.querySelectorAll(".kpi")[0];
         kpi.textContent = primaryKPIs[i];
