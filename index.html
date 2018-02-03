@@ -1,57 +1,148 @@
 <!DOCTYPE html>
 <html>
-<body>
-<style>
-* {
-  font-family: 'Roboto', Arial;
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <body>
+    <style>
+      * {
+        font-family: 'Roboto', Arial;
+      }
+      body {
+        margin: 0;
+      }
+      header, .header {
+        background-color: #003b64;
+        color: #fff;
+        padding: 8px;
+        text-align: center;
+      }
+      .card {
+        color: #090909;
+        background-color: white;
+        outline: 1px solid #ccc;
+        text-align: center;
+        margin: 32px auto;
+        max-width: 320px;
+        padding-bottom: 16px;
+      }
+      .title-block {
+        padding-top: 16px;
+        padding-left: 16px;
+        padding-bottom: 2px;
+      }
+      h1, h2, .table{
+        text-align: left;
+        margin: 0;
+      }
+      h1 {
+        font-weight: 400;
+        font-size: 24px;
+      }
+      h2 {
+        font-weight: 300;
+        font-size: 14px;
+        color: #9B9B9B;
+      }
+      .table {
+        display: flex;
+        padding-left: 16px;
+      }
+      .table>div {
+        margin-right: 32px;
+      }
+      .kpi {
+        font-weight: 500;
+      }
+      progress {
+        width: 100%;
+        margin-top: 8px;
+        margin-bottom: 8px;
+      }
+      .line-break {
+        border: 0.5px solid #9B9B9B;
+        margin-top: 16px;
+        margin-bottom: 16px;
+      }
+    </style>
 
-}
-.card {
-  color: white;
-  background-color: DodgerBlue;
-  padding: 20px;
-  text-align: center;
-  margin: 10px;
-}
-</style>
+    <header>
+      <h1 class="header">Value Cards</h1>
+    </header>
+    <!-- <input type="checkbox" id="showDone" name="done" value="done"> -->
+      <!-- <label for="showDone">Show Done</label> -->
 
-<!-- <h1>Value Cards</h1> -->
+    <template>
+      <div class="card">
+        <div>
+          <a href="https://www.google.com">
+            <img src="https://placehold.it/320x150">
+          </a>
+        </div>
+        
+        <div class="title-block">
+          <h1>title</h1>
+          <h2>description</h2>
+        </div>
+        <!-- <div class="line-break"></div> -->
+        <progress value="80" max="100"></progress>
+        <div class="table">    
+          <div>
+            <div class="kpi">KPI</div>
+            <h2 class="metric">metric</h2>
+          </div>
+          <div>
+            <div class="kpi">KPI</div>
+            <h2 class="metric">metric</h2>
+          </div>
+        </div>
+      </div>
+    </template>
 
-<!-- <p>Filters, etc.</p> -->
+    <script src="js/sample.js">
+    </script>
 
-<template>
-  <div class="card">Title: </div>
-</template>
+    <script>
+    function showContent() {
+      // grab the template element and temporarily store it
+      var temp = document.getElementsByTagName("template")[0];
+      
+      // do this for as many items as there are in the list
+      for (i = 0; i < initiatives.length; i++) {
 
-<script>
-var myArr = [
-  "Unified Home Page",
-  "Product Warranty",
-  "Push Notifications",
-  "Product Videos",
-  "Product Variants: Colours",
-  "Multi-seller Select Display"
-];
+        // update the template from the included js
+        updateData();
 
-showContent();
+        // clone the entire node which was stored temporarily
+        var clone = temp.content.cloneNode(true);  
+        //Create a new node, based on the template:
+        card = document.importNode(clone, true);
 
-function showContent() {
-  var temp, item, a, i;
-  //get the template element:
-  temp = document.getElementsByTagName("template")[0];
-  //get the DIV element from the template:
-  item = temp.content.querySelector("div");
-  //for each item in the array:
-  for (i = 0; i < myArr.length; i++) {
-    //Create a new node, based on the template:
-    a = document.importNode(item, true);
-    //Add data from the array:
-    a.textContent += myArr[i];
-    //append the new node wherever you like:
-    document.body.appendChild(a);
-  }
-}
-</script>
+        //append the new node wherever you like:
+        document.body.appendChild(card);
+      }
 
-</body>
+      function updateData (){
+        // for each element, 
+        // (1) select the h1 tag within the temporarily stored element
+        // (2) set the text to be the first string in the array
+        h1 = temp.content.querySelector("h1");
+        h1.textContent = initiatives[i];
+        h2 = temp.content.querySelector("h2");
+        h2.textContent = descriptions[i];
+        progressBar = temp.content.querySelector("progress");
+        progressBar.value = progressValues[i];
+        // Key performance indicator metrics
+        kpi = temp.content.querySelectorAll(".kpi")[0];
+        kpi.textContent = primaryKPIs[i];
+        metric = temp.content.querySelectorAll(".metric")[0];
+        metric.textContent = primaryMetrics[i];
+        kpi = temp.content.querySelectorAll(".kpi")[1];
+        kpi.textContent = secondaryKPIs[i];
+        metric = temp.content.querySelectorAll(".metric")[1];
+        metric.textContent = secondaryMetrics[i];
+      }
+    }
+
+    showContent();
+    </script>
+  </body>
 </html>
