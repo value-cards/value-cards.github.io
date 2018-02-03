@@ -14,7 +14,9 @@
         background-color: #003b64;
         color: #fff;
         padding: 8px;
-        text-align: center;
+        text-align: left;
+        font-size: 18px;
+        font-weight: 300;
       }
       .card {
         color: #090909;
@@ -29,9 +31,7 @@
         box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
       }
       .title-block {
-        padding-top: 16px;
-        padding-left: 16px;
-        padding-bottom: 2px;
+        padding: 16px 16px 2px 16px;
       }
       h1, h2, .table{
         text-align: left;
@@ -40,11 +40,21 @@
       h1 {
         font-weight: 400;
         font-size: 24px;
+        padding-bottom: 8px;
       }
       h2 {
         font-weight: 300;
         font-size: 14px;
         color: #9B9B9B;
+      }
+      .logo {
+        margin: auto 0;
+        height: 22px;
+        width: 36px;
+        padding-right: 8px;
+      }
+      .flex {
+        display: flex;
       }
       .table {
         display: flex;
@@ -68,7 +78,7 @@
       }
     </style>
 
-    <header>
+    <header class="flex">
       <h1 class="header">Value Cards</h1>
     </header>
     <!-- <input type="checkbox" id="showDone" name="done" value="done"> -->
@@ -88,7 +98,7 @@
         </div>
         <div class="line-break"></div>
         <!-- <progress value="80" max="100"></progress> -->
-        <div class="table">    
+        <div class="table">
           <div>
             <div class="kpi">KPI</div>
             <h2 class="metric">metric</h2>
@@ -100,6 +110,55 @@
         </div>
       </div>
     </template>
+
+
+    <script src="https://www.gstatic.com/firebasejs/4.9.1/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.9.0/firebase-app.js"></script>
+    <!-- <script src="https://www.gstatic.com/firebasejs/4.9.0/firebase-auth.js"></script> -->
+    <script src="https://www.gstatic.com/firebasejs/4.9.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.9.0/firebase-firestore.js"></script>
+    <!-- <script src="https://www.gstatic.com/firebasejs/4.9.0/firebase-messaging.js"></script> -->
+    <script>
+      // Initialize Firebase
+      var config = {
+        // removed
+      };
+      firebase.initializeApp(config);
+      // console.log(firebase);
+      var database = firebase.database();
+      // console.log(database);
+
+      function writeUserData(userId, name, email, imageUrl) {
+        firebase.database().ref('users/' + userId).set({
+          username: name,
+          email: email,
+          profile_picture : imageUrl
+        });
+        // console.log(firebase.database().ref('/users/' + userId).once('value'));
+      }
+
+      writeUserData('test','test-name','test@email.com','image-url.com');
+
+      function writeInitiativeData(initiative, description, progressValue, kpis, metrics) {
+        firebase.database().ref('mobile-apps/' + initiative).set({
+          initiative: initiative,
+          description: description,
+          progress: progressValue,
+          kpis: kpis,
+          metrics: metrics
+        });
+
+      }
+
+      writeInitiativeData(
+        'Initiative Title',
+        'Description.',
+        '60',
+        '+$1M',
+        'revenue',
+        );
+
+    </script>
 
     <script src="js/sample.js">
     </script>
