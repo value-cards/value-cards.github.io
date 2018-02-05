@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <body>
+    <style>
+      * {
+        font-family: 'Roboto', 'Avenir Next', 'Avenir', 'Open Sans', Arial;
+      }
+      body {
+        margin: 0;
+        background-color: #fafafa;
+      }
+      header, #header {
+        background-color: #003b64;
+        color: #fff;
+        padding: 8px;
+        text-align: left;
+        font-size: 18px;
+        font-weight: 300;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+      }
+      .card {
+        color: #090909;
+        background-color: white;
+        outline: 1px solid #ccc;
+        text-align: center;
+        margin: 32px auto;
+        /* 64px for printing */
+        /*margin: 64px auto;*/
+        max-width: 320px;
+        padding-bottom: 16px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+      }
+      .title-block {
+        padding: 16px 16px 2px 16px;
+      }
+      h1, h2, .table{
+        text-align: left;
+        margin: 0;
+      }
+      h1 {
+        font-weight: 400;
+        font-size: 24px;
+        padding-bottom: 8px;
+      }
+      h2 {
+        font-weight: 300;
+        font-size: 14px;
+        color: #9B9B9B;
+      }
+      #logo {
+        margin: auto 0;
+        height: 22px;
+        width: 36px;
+        padding-right: 8px;
+      }
+      .flex {
+        display: flex;
+      }
+      .table {
+        display: flex;
+        padding-left: 16px;
+      }
+      .table>div {
+        margin-right: 32px;
+      }
+      .kpi {
+        font-weight: 500;
+      }
+      progress {
+        width: 100%;
+        margin-top: 8px;
+        margin-bottom: 8px;
+      }
+      .line-break {
+        border: 0.5px solid #9B9B9B;
+        margin-top: 16px;
+        margin-bottom: 16px;
+      }
+    </style>
+
+    <header class="flex">
+
+    </header>
+    <!-- <input type="checkbox" id="showDone" name="done" value="done"> -->
+      <!-- <label for="showDone">Show Done</label> -->
+
+    <!-- <template> -->
+      <div class="card">
+        <div>
+          <a id="link" href="#">
+            <img id="image" src="https://placehold.it/320x150">
+          </a>
+        </div>
+        
+        <div class="title-block">
+          <h1 id="title">title</h1>
+          <h2 id="description">description</h2>
+        </div>
+        <div class="line-break"></div>
+        <!-- <progress id="progressBar" value="80" max="100"></progress> -->
+        <div class="table">
+          <div>
+            <div id="primaryKPI" class="kpi">KPI</div>
+            <h2 id="primaryMetric" class="metric">metric</h2>
+          </div>
+          <div>
+            <div id="secondaryKPI" class="kpi">KPI</div>
+            <h2 id="secondaryMetric" class="metric">metric</h2>
+          </div>
+        </div>
+      </div>
+    <!-- </template> -->
+
+
+    <script src="https://www.gstatic.com/firebasejs/4.9.0/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.9.0/firebase-firestore.js"></script>
+
+    <script>
+      // Initialize Firebase
+      var config = {
+
+      };
+      firebase.initializeApp(config);
+      var firestore = firebase.firestore();
+
+      // const docRef = firestore.doc("teams/Initiatives");
+      const docRef = firestore.collection("teams").doc("initiativeData");
+      const linkRef = document.querySelector("#link");
+      const imageRef = document.querySelector("#image");
+      const titleRef = document.querySelector("#title");
+      const descriptionRef = document.querySelector("#description");
+      const primaryKPIRef = document.querySelector("#primaryKPI");
+      const primaryMetricRef = document.querySelector("#primaryMetric");
+      const secondaryKPIRef = document.querySelector("#secondaryKPI");
+      const secondaryMetricRef = document.querySelector("#secondaryMetric");
+
+      docRef.get().then(function (doc) {
+          if (doc && doc.exists) {
+              const myData = doc.data();
+              titleRef.innerText = myData.pushNotifications.title;
+              descriptionRef.innerText = myData.pushNotifications.description;
+              imageRef.src = myData.pushNotifications.image;
+              linkRef.href = myData.pushNotifications.url;
+              primaryKPIRef.innerText = myData.pushNotifications.primaryKpi;
+              primaryMetricRef.innerText = myData.pushNotifications.primaryMetric;
+              secondaryKPIRef.innerText = myData.pushNotifications.secondaryKpi;
+              secondaryMetricRef.innerText = myData.pushNotifications.secondaryMetric;
+          }
+      });
+
+      docRef.get().then(function(doc) {
+          if (doc.exists) {
+              console.log("Document data:", doc.data());
+          } else {
+              // doc.data() will be undefined in this case
+              console.log("No such document!");
+          }
+      }).catch(function(error) {
+          console.log("Error getting document:", error);
+      });
+
+      // firestore.collection("teams").get().then((querySnapshot) => {
+      //     querySnapshot.forEach((doc) => {
+      //         console.log(`${doc.id} => ${doc.data()}`);
+      //     });
+      // });
+    </script>
+
+  </body>
+</html>
