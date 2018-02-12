@@ -77,16 +77,28 @@
         margin-top: 16px;
         margin-bottom: 16px;
       }
+      button {
+        width: 25%;
+        height: 40px;
+        margin-top: 8px;
+        border-radius: 2px;
+        font-size: 15px;
+        text-transform: uppercase;
+      }
+      #addNew {
+        width: 100%;
+      }
     </style>
 
     <header class="flex">
-
+      <img id="logo" src="">
+      <h1 id="header">Title</h1>
     </header>
     <!-- <input type="checkbox" id="showDone" name="done" value="done"> -->
       <!-- <label for="showDone">Show Done</label> -->
 
     <!-- <template> -->
-      <div class="card">
+      <div class="card" id="warranty">
         <div>
           <a id="link" href="#">
             <img id="image" src="https://placehold.it/320x150">
@@ -94,23 +106,55 @@
         </div>
         
         <div class="title-block">
-          <h1 id="title">title</h1>
-          <h2 id="description">description</h2>
+          <h1 id="title" contenteditable="true">title</h1>
+          <!--<input/>-->
+          <h2 id="description" contenteditable="true">description</h2>
         </div>
         <div class="line-break"></div>
         <!-- <progress id="progressBar" value="80" max="100"></progress> -->
         <div class="table">
           <div>
-            <div id="primaryKPI" class="kpi">KPI</div>
-            <h2 id="primaryMetric" class="metric">metric</h2>
+            <div id="primaryKPI" class="kpi" contenteditable="true">KPI</div>
+            <h2 id="primaryMetric" class="metric" contenteditable="true">metric</h2>
           </div>
           <div>
-            <div id="secondaryKPI" class="kpi">KPI</div>
-            <h2 id="secondaryMetric" class="metric">metric</h2>
+            <div id="secondaryKPI" class="kpi" contenteditable="true">KPI</div>
+            <h2 id="secondaryMetric" class="metric" contenteditable="true">metric</h2>
+          </div>
+        </div>
+        <button onclick="save()">Save</button>
+        <button disabled onclick="removeThis(event)">Delete</button>
+      </div>
+    <!-- </template> -->
+
+    <button id="addNew" onclick="addNew()">Add New</button>
+
+    <template>
+      <div class="card">
+        <div>
+          <a href="#">
+            <img src="https://placehold.it/320x150">
+          </a>
+        </div>
+
+        <div class="title-block">
+          <h1 id="templateTitle">title</h1>
+          <h2>description</h2>
+        </div>
+        <div class="line-break"></div>
+        <!-- <progress value="80" max="100"></progress> -->
+        <div class="table">
+          <div>
+            <div class="kpi">KPI</div>
+            <h2 class="metric">metric</h2>
+          </div>
+          <div>
+            <div class="kpi">KPI</div>
+            <h2 class="metric">metric</h2>
           </div>
         </div>
       </div>
-    <!-- </template> -->
+    </template>
 
 
     <script src="https://www.gstatic.com/firebasejs/4.9.0/firebase.js"></script>
@@ -119,52 +163,115 @@
     <script>
       // Initialize Firebase
       var config = {
-
+        apiKey: "",
+        authDomain: "",
+        projectId: ""
       };
       firebase.initializeApp(config);
       var firestore = firebase.firestore();
+      const db = firestore.collection("mobileApps");
+      const docRef = firestore.collection("mobileApps").doc("warranty");
 
-      // const docRef = firestore.doc("teams/Initiatives");
-      const docRef = firestore.collection("teams").doc("initiativeData");
       const linkRef = document.querySelector("#link");
       const imageRef = document.querySelector("#image");
       const titleRef = document.querySelector("#title");
       const descriptionRef = document.querySelector("#description");
-      const primaryKPIRef = document.querySelector("#primaryKPI");
+      const primaryKpiRef = document.querySelector("#primaryKPI");
       const primaryMetricRef = document.querySelector("#primaryMetric");
-      const secondaryKPIRef = document.querySelector("#secondaryKPI");
+      const secondaryKpiRef = document.querySelector("#secondaryKPI");
       const secondaryMetricRef = document.querySelector("#secondaryMetric");
 
-      docRef.get().then(function (doc) {
-          if (doc && doc.exists) {
-              const myData = doc.data();
-              titleRef.innerText = myData.pushNotifications.title;
-              descriptionRef.innerText = myData.pushNotifications.description;
-              imageRef.src = myData.pushNotifications.image;
-              linkRef.href = myData.pushNotifications.url;
-              primaryKPIRef.innerText = myData.pushNotifications.primaryKpi;
-              primaryMetricRef.innerText = myData.pushNotifications.primaryMetric;
-              secondaryKPIRef.innerText = myData.pushNotifications.secondaryKpi;
-              secondaryMetricRef.innerText = myData.pushNotifications.secondaryMetric;
-          }
+      firestore.collection("mobileApps").get().then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+//              console.log(`${doc.id}`);
+              var currentID = `${doc.id}`;
+//              console.log(db.doc(currentID).id);
+
+            db.doc(currentID).get().then(function (doc) {
+              if (doc && doc.exists) {
+                var newData = doc.data();
+
+                var temp = document.getElementsByTagName("template")[0];
+
+                temp.content.querySelector("h1").textContent = newData.title;
+                temp.content.querySelector("h2").textContent = newData.description;
+
+                temp.content.querySelectorAll(".kpi")[0].textContent = newData.primaryKpi;
+                temp.content.querySelectorAll(".metric")[0].textContent = newData.primaryMetric;
+                temp.content.querySelectorAll(".kpi")[1].textContent = newData.seconadryKpi;
+                temp.content.querySelectorAll(".metric")[1].textContent = newData.secondaryMetric;
+
+                // clone the entire node which was stored temporarily
+                var clone = temp.content.cloneNode(true);
+
+                //Create a new node, based on the template:
+                card = document.importNode(clone, true);
+                //append the new node wherever you like:
+                document.body.appendChild(card);
+              }  else {
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+              }
+            }).catch(function(error) {
+              console.log("Error getting document:", error);
+            });
+
+
+              // Populate UI with data
+              docRef.get().then(function (doc) {
+                if (doc && doc.exists) {
+                  const myData = doc.data();
+
+                  titleRef.innerText = myData.title;
+                  descriptionRef.innerText = myData.description;
+                  imageRef.src = myData.image;
+                  linkRef.href = myData.url;
+                  primaryKpiRef.innerText = myData.primaryKpi;
+                  primaryMetricRef.innerText = myData.primaryMetric;
+                  secondaryKpiRef.innerText = myData.secondaryKpi;
+                  secondaryMetricRef.innerText = myData.secondaryMetric;
+
+
+                } else {
+                  // doc.data() will be undefined in this case
+                  console.log("No such document!");
+                }
+              }).catch(function(error) {
+                console.log("Error getting document:", error);
+              });
+          });
       });
 
-      docRef.get().then(function(doc) {
-          if (doc.exists) {
-              console.log("Document data:", doc.data());
-          } else {
-              // doc.data() will be undefined in this case
-              console.log("No such document!");
-          }
-      }).catch(function(error) {
-          console.log("Error getting document:", error);
-      });
 
-      // firestore.collection("teams").get().then((querySnapshot) => {
-      //     querySnapshot.forEach((doc) => {
-      //         console.log(`${doc.id} => ${doc.data()}`);
-      //     });
-      // });
+      // Update data based on input
+      function save() {
+        var warrantyRef = firestore.collection("mobileApps").doc("warranty");
+
+        // Set fields of the mobileApps initiative 'Warranty'
+        return warrantyRef.update({
+          title: titleRef.innerText,
+          description: descriptionRef.innerText,
+          primaryKpi: primaryKpiRef.innerText,
+          primaryMetric: primaryMetricRef.innerText,
+          secondaryKpi: secondaryKpiRef.innerText,
+          secondaryMetric: secondaryMetricRef.innerText
+        })
+                .then(function() {
+                  console.log("Document successfully updated!");
+                })
+                .catch(function(error) {
+                  // The document probably doesn't exist.
+                  console.error("Error updating document: ", error);
+                });
+      }
+
+      function removeThis(event) {
+        console.log(event.target.parentNode.id);
+      }
+
+      function addNew() {
+        console.log("added a new item!");
+      }
     </script>
 
   </body>
