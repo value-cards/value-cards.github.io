@@ -177,11 +177,8 @@
     </style>
 
     <header class="flex shadow-1" onclick="toggleAddButton()">
-      <!--<img id="logo" src="https://images.bbycastatic.ca/sf/images/common/main-logo.svg">-->
       <h1 id="header">Team Initiatives</h1>
     </header>
-    <!-- <input type="checkbox" id="showDone" name="done" value="done"> -->
-      <!-- <label for="showDone">Show Done</label> -->
 
     <button id="addNew" class="shadow-2 slide-down" onclick="addNew()">+</button>
 
@@ -274,11 +271,8 @@
       }
 
       function showEdit(event) {
-//        console.log("showing edit buttons!");
         var saveButton = event.target.parentNode.parentNode.querySelectorAll('button')[1];
         var deleteButton = event.target.parentNode.parentNode.querySelectorAll('button')[2];
-//        console.log(saveButton);
-//        console.log(deleteButton);
         saveButton.classList.toggle('hide');
         deleteButton.classList.toggle('hide');
       }
@@ -336,7 +330,6 @@
       function addNew() {
 //        console.log("added a new item!");
         var tempID = ("initiative" + Math.round(Math.random()*100000000).toString());
-//        console.log("tempID = " + tempID);
 
         firebase.firestore().collection("sample").doc(tempID).set({
           title: "Title",
