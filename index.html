@@ -277,6 +277,16 @@
         deleteButton.classList.toggle('hide');
       }
 
+      function toggleToast(message) {
+          document.querySelector('#toast').innerText = message;
+          document.querySelector('#toast').classList.toggle('slide-down');
+          document.querySelector('#toast').classList.toggle('slide-up');
+          setTimeout(function(){
+              document.querySelector('#toast').classList.toggle('slide-down');
+              document.querySelector('#toast').classList.toggle('slide-up');
+          }, 2000);
+      }
+
       function save(event) {
         var item = event.target.parentNode.id;
         var initiativeRef = firestore.collection("sample").doc(item);
@@ -293,17 +303,12 @@
         })
                 .then(function() {
                   console.log("Document successfully updated!");
-                  document.querySelector('#toast').innerText = "Save successful!";
-                  document.querySelector('#toast').classList.toggle('slide-down');
-                  document.querySelector('#toast').classList.toggle('slide-up');
-                  setTimeout(function(){
-                    document.querySelector('#toast').classList.toggle('slide-down');
-                    document.querySelector('#toast').classList.toggle('slide-up');
-                  }, 2000);
+                  toggleToast("Save successful!");
                 })
                 .catch(function(error) {
                   // The document probably doesn't exist.
                   console.error("Error updating document: ", error);
+                  toggleToast("Sorry, something went wrong saving. Please try again.");
                 });
       }
 
@@ -315,15 +320,10 @@
 
         initiativeRef.delete().then(function() {
           console.log("Document successfully deleted!");
-          document.querySelector('#toast').innerText = "Initiative successfully deleted!";
-          document.querySelector('#toast').classList.toggle('slide-down');
-          document.querySelector('#toast').classList.toggle('slide-up');
-          setTimeout(function(){
-            document.querySelector('#toast').classList.toggle('slide-down');
-            document.querySelector('#toast').classList.toggle('slide-up');
-          }, 2000);
+          toggleToast("Initiative successfully deleted!");
         }).catch(function(error) {
           console.error("Error removing document: ", error);
+          toggleToast("Sorry, something went wrong removing this initiative. Please try again.");
         });
       }
 
@@ -341,16 +341,11 @@
         })
                 .then(function() {
 //                  console.log("Document successfully written!");
-                  document.querySelector('#toast').innerText = "New initiative created!";
-                  document.querySelector('#toast').classList.toggle('slide-down');
-                  document.querySelector('#toast').classList.toggle('slide-up');
-                  setTimeout(function(){
-                    document.querySelector('#toast').classList.toggle('slide-down');
-                    document.querySelector('#toast').classList.toggle('slide-up');
-                  }, 2000);
+                  toggleToast("New initiative created!");
                 })
                 .catch(function(error) {
                   console.error("Error writing document: ", error);
+                  toggleToast("Sorry, there was a problem creating a new initiative. Please try again.");
                 });
 
         var temp = document.querySelector("template");
