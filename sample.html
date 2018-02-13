@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="A universal language for value and priority">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Value Cards</title>
+
+<!-- Disable tap highlight on IE -->
+<meta name="msapplication-tap-highlight" content="no">
+<!--<link rel="icon" href="images/favicon.ico">-->
+
+<!-- Web Application Manifest -->
+<!--<link rel="manifest" href="manifest.json">-->
+
+<!-- Add to homescreen for Chrome on Android -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="ValueCards">
+<meta name="theme-color" content="#003b64">
+
+<!-- Add to homescreen for Safari on iOS -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ValueCards">
+<meta name="apple-mobile-web-app-status-bar-style" content="#003b64">
+
+<!-- Tile icon for Win8 -->
+<!-- <meta name="msapplication-TileColor" content="#003b64">
+<meta name="msapplication-navbutton-color" content="#003b64"> -->
+  <body>
+    <style>
+      * {
+        font-family: 'Roboto', 'Avenir Next', 'Avenir', 'Open Sans', Arial;
+      }
+      body {
+        margin: 0;
+        background-color: #fafafa;
+      }
+      .shadow-1 {
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+      }
+      .shadow-2 {
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+      }
+      header, #header {
+        background-color: #003b64;
+        color: #fff;
+        padding: 8px;
+        text-align: left;
+        font-size: 18px;
+        font-weight: 300;
+      }
+      .card {
+        color: #090909;
+        background-color: #fff;
+        outline: 1px solid #ccc;
+        text-align: center;
+        margin: 32px auto;
+        /* 64px for printing */
+        /*margin: 64px auto;*/
+        max-width: 320px;
+        padding-bottom: 10px;
+      }
+      .title-block {
+        padding: 16px 16px 2px 16px;
+      }
+      h1, h2, .table{
+        text-align: left;
+        margin: 0;
+      }
+      h1 {
+        font-weight: 400;
+        font-size: 24px;
+        padding-bottom: 8px;
+      }
+      h2 {
+        font-weight: 300;
+        font-size: 14px;
+        color: #9B9B9B;
+      }
+      #logo {
+        margin: auto 0;
+        height: 22px;
+        width: 36px;
+        padding-right: 8px;
+        padding-left: 8px;
+      }
+      .flex {
+        display: flex;
+      }
+      .flex-strech {
+        -webkit-flex: 1; /* Safari 6.1+ */
+        flex: 1;
+      }
+      .table {
+        display: flex;
+        padding-left: 16px;
+      }
+      .table>div {
+        margin-right: 32px;
+      }
+      .kpi {
+        font-weight: 500;
+      }
+      progress {
+        width: 100%;
+        margin-top: 8px;
+        margin-bottom: 8px;
+      }
+      .line-break {
+        border: 0.5px solid #9B9B9B;
+        margin-top: 16px;
+        margin-bottom: 16px;
+      }
+      button {
+        width: 25%;
+        height: 40px;
+        margin-top: 8px;
+        border-radius: 2px;
+        font-size: 15px;
+        text-transform: uppercase;
+        cursor: pointer;
+      }
+      .edit {
+        border: none;
+      }
+      .edit-visible {
+        margin-top: 0;
+        background: #fff;
+        border: none;
+        color: rgba(0,0,0,0);
+        transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+      }
+      .edit-visible:hover,.edit-visible:focus,.edit-visible:active {
+        color: rgba(0,0,0,0.9);
+      }
+      .show {
+        display: block;
+      }
+      .hide {
+        display: none;
+      }
+      .slide-down {
+        bottom: -64px;
+      }
+      .slide-up {
+        bottom: 16px;
+      }
+      #addNew {
+        cursor: pointer;
+        padding: 8px 16px;
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        color: #fff;
+        font-size: 32px;
+        background-color: #003b64;
+        position: fixed;
+        right: 16px;
+        font-weight: 100;
+        transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+        border: none;
+      }
+      #addNew:hover {
+        box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+      }
+      #toast {
+        position: fixed;
+        left: 16px;
+        background-color: #323232;
+        padding: 16px 24px;
+        color: #fff;
+        box-shadow: 0 7px 18px rgba(0,0,0,0.2);
+        border-radius: 2px;
+        transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+      }
+    </style>
+
+    <header class="flex shadow-1" onclick="toggleAddButton()">
+      <!--<img id="logo" src="https://images.bbycastatic.ca/sf/images/common/main-logo.svg">-->
+      <h1 id="header">Team Initiatives</h1>
+    </header>
+    <!-- <input type="checkbox" id="showDone" name="done" value="done"> -->
+      <!-- <label for="showDone">Show Done</label> -->
+
+    <button id="addNew" class="shadow-2 slide-down" onclick="addNew()">+</button>
+
+    <template>
+      <div class="card shadow-1">
+        <div>
+          <a href="#">
+            <img src="https://placehold.it/320x150">
+          </a>
+        </div>
+
+        <div class="title-block">
+          <h1 contenteditable>Title</h1>
+          <h2 contenteditable>Description.</h2>
+        </div>
+        <div class="line-break"></div>
+        <!-- <progress value="80" max="100"></progress> -->
+        <div class="table">
+          <div>
+            <div class="kpi" contenteditable>KPI</div>
+            <h2 class="metric" contenteditable>metric</h2>
+          </div>
+          <div class="flex-strech">
+            <div class="kpi" contenteditable>KPI</div>
+            <h2 class="metric" contenteditable>metric</h2>
+          </div>
+          <button class="edit-visible" onclick="showEdit(event)">Edit</button>
+        </div>
+        <button class="edit hide" onclick="save(event)">Save</button>
+        <button class="edit hide" onclick="removeThis(event)">Delete</button>
+      </div>
+    </template>
+
+    <div id="toast" class="slide-down">Initiative added!</div>
+
+    <script src="https://www.gstatic.com/firebasejs/4.9.0/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.9.0/firebase-firestore.js"></script>
+
+    <script>
+      // Initialize Firebase
+      var config = {
+        apiKey: "",
+        authDomain: "initiative-list.firebaseapp.com",
+        projectId: "initiative-list"
+      };
+      firebase.initializeApp(config);
+      var firestore = firebase.firestore();
+      const db = firestore.collection("sample");
+
+      firestore.collection("sample").get().then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+              var currentID = `${doc.id}`;
+
+            db.doc(currentID).get().then(function (doc) {
+              if (doc && doc.exists) {
+                var newData = doc.data();
+
+                var temp = document.querySelector("template");
+
+                temp.content.querySelector(".card").id = currentID;
+
+                temp.content.querySelector("h1").textContent = newData.title;
+                temp.content.querySelector("h2").textContent = newData.description;
+
+                temp.content.querySelectorAll(".kpi")[0].textContent = newData.primaryKpi;
+                temp.content.querySelectorAll(".metric")[0].textContent = newData.primaryMetric;
+                temp.content.querySelectorAll(".kpi")[1].textContent = newData.secondaryKpi;
+                temp.content.querySelectorAll(".metric")[1].textContent = newData.secondaryMetric;
+
+                // clone the entire node which was just stored temporarily
+                var clone = temp.content.cloneNode(true);
+
+                //Create a new node, based on the template:
+                card = document.importNode(clone, true);
+                //append the new node wherever you like:
+                document.body.appendChild(card);
+              }  else {
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+              }
+            }).catch(function(error) {
+              console.log("Error getting document:", error);
+            });
+          });
+      });
+
+      function toggleAddButton() {
+        document.querySelector('#addNew').classList.toggle('slide-down');
+        document.querySelector('#addNew').classList.toggle('slide-up');
+      }
+
+      function showEdit(event) {
+//        console.log("showing edit buttons!");
+        var saveButton = event.target.parentNode.parentNode.querySelectorAll('button')[1];
+        var deleteButton = event.target.parentNode.parentNode.querySelectorAll('button')[2];
+//        console.log(saveButton);
+//        console.log(deleteButton);
+        saveButton.classList.toggle('hide');
+        deleteButton.classList.toggle('hide');
+      }
+
+      function save(event) {
+        var item = event.target.parentNode.id;
+        var initiativeRef = firestore.collection("sample").doc(item);
+        var tempTitleRef = document.querySelector('#'+item);
+
+        // Set fields of the sample initiative that was clicked
+        return initiativeRef.update({
+          title: tempTitleRef.querySelector("h1").textContent,
+          description: tempTitleRef.querySelector("h2").textContent,
+          primaryKpi: tempTitleRef.querySelectorAll(".kpi")[0].textContent,
+          primaryMetric: tempTitleRef.querySelectorAll(".metric")[0].textContent,
+          secondaryKpi: tempTitleRef.querySelectorAll(".kpi")[1].textContent,
+          secondaryMetric: tempTitleRef.querySelectorAll(".metric")[1].textContent
+        })
+                .then(function() {
+                  console.log("Document successfully updated!");
+                  document.querySelector('#toast').innerText = "Save successful!";
+                  document.querySelector('#toast').classList.toggle('slide-down');
+                  document.querySelector('#toast').classList.toggle('slide-up');
+                  setTimeout(function(){
+                    document.querySelector('#toast').classList.toggle('slide-down');
+                    document.querySelector('#toast').classList.toggle('slide-up');
+                  }, 2000);
+                })
+                .catch(function(error) {
+                  // The document probably doesn't exist.
+                  console.error("Error updating document: ", error);
+                });
+      }
+
+      function removeThis(event) {
+        var item = event.target.parentNode.id;
+        var initiativeRef = firestore.collection("sample").doc(item);
+
+        document.querySelector('body').removeChild(document.querySelector('#'+item));
+
+        initiativeRef.delete().then(function() {
+          console.log("Document successfully deleted!");
+          document.querySelector('#toast').innerText = "Initiative successfully deleted!";
+          document.querySelector('#toast').classList.toggle('slide-down');
+          document.querySelector('#toast').classList.toggle('slide-up');
+          setTimeout(function(){
+            document.querySelector('#toast').classList.toggle('slide-down');
+            document.querySelector('#toast').classList.toggle('slide-up');
+          }, 2000);
+        }).catch(function(error) {
+          console.error("Error removing document: ", error);
+        });
+      }
+
+      function addNew() {
+//        console.log("added a new item!");
+        var tempID = ("initiative" + Math.round(Math.random()*100000000).toString());
+//        console.log("tempID = " + tempID);
+
+        firebase.firestore().collection("sample").doc(tempID).set({
+          title: "Title",
+          description: "Description.",
+          primaryKpi: "KPI",
+          primaryMetric: "Metric",
+          secondaryKpi: "KPI",
+          secondaryMetric: "Metric"
+        })
+                .then(function() {
+//                  console.log("Document successfully written!");
+                  document.querySelector('#toast').innerText = "New initiative created!";
+                  document.querySelector('#toast').classList.toggle('slide-down');
+                  document.querySelector('#toast').classList.toggle('slide-up');
+                  setTimeout(function(){
+                    document.querySelector('#toast').classList.toggle('slide-down');
+                    document.querySelector('#toast').classList.toggle('slide-up');
+                  }, 2000);
+                })
+                .catch(function(error) {
+                  console.error("Error writing document: ", error);
+                });
+
+        var temp = document.querySelector("template");
+
+        temp.content.querySelector(".card").id = (tempID);
+
+        temp.content.querySelector("h1").textContent = "Title";
+        temp.content.querySelector("h2").textContent = "Description.";
+
+        temp.content.querySelectorAll(".kpi")[0].textContent = "KPI";
+        temp.content.querySelectorAll(".metric")[0].textContent = "metric";
+        temp.content.querySelectorAll(".kpi")[1].textContent = "";
+        temp.content.querySelectorAll(".metric")[1].textContent = "";
+
+        // clone the entire node which was stored temporarily
+        var clone = temp.content.cloneNode(true);
+
+        //Create a new node, based on the template:
+        card = document.importNode(clone, true);
+        //append the new node wherever you like:
+        document.body.appendChild(card);
+      }
+    </script>
+  </body>
+</html>
