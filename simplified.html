@@ -10,6 +10,12 @@
         margin: 0;
         background-color: #fafafa;
       }
+      .shadow-1 {
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+      }
+      .shadow-2 {
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+      }
       header, #header {
         background-color: #003b64;
         color: #fff;
@@ -17,11 +23,10 @@
         text-align: left;
         font-size: 18px;
         font-weight: 300;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
       }
       .card {
         color: #090909;
-        background-color: white;
+        background-color: #fff;
         outline: 1px solid #ccc;
         text-align: center;
         margin: 32px auto;
@@ -29,7 +34,6 @@
         /*margin: 64px auto;*/
         max-width: 320px;
         padding-bottom: 16px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
       }
       .title-block {
         padding: 16px 16px 2px 16px;
@@ -53,6 +57,7 @@
         height: 22px;
         width: 36px;
         padding-right: 8px;
+        padding-left: 8px;
       }
       .flex {
         display: flex;
@@ -86,51 +91,36 @@
         text-transform: uppercase;
       }
       #addNew {
-        width: 100%;
+        cursor: pointer;
+        padding: 8px 16px;
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        color: #fff;
+        font-size: 32px;
+        background-color: #003b64;
+        position: fixed;
+        bottom: 32px;
+        right: 32px;
+        font-weight: 100;
+        transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+        border: none;
+      }
+      #addNew:hover {
+        box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
       }
     </style>
 
-    <header class="flex">
-      <img id="logo" src="">
+    <header class="flex shadow-1">
       <h1 id="header">Title</h1>
     </header>
     <!-- <input type="checkbox" id="showDone" name="done" value="done"> -->
       <!-- <label for="showDone">Show Done</label> -->
 
-    <!-- <template> -->
-      <div class="card" id="warranty">
-        <div>
-          <a id="link" href="#">
-            <img id="image" src="https://placehold.it/320x150">
-          </a>
-        </div>
-        
-        <div class="title-block">
-          <h1 id="title" contenteditable="true">title</h1>
-          <!--<input/>-->
-          <h2 id="description" contenteditable="true">description</h2>
-        </div>
-        <div class="line-break"></div>
-        <!-- <progress id="progressBar" value="80" max="100"></progress> -->
-        <div class="table">
-          <div>
-            <div id="primaryKPI" class="kpi" contenteditable="true">KPI</div>
-            <h2 id="primaryMetric" class="metric" contenteditable="true">metric</h2>
-          </div>
-          <div>
-            <div id="secondaryKPI" class="kpi" contenteditable="true">KPI</div>
-            <h2 id="secondaryMetric" class="metric" contenteditable="true">metric</h2>
-          </div>
-        </div>
-        <button onclick="save()">Save</button>
-        <button disabled onclick="removeThis(event)">Delete</button>
-      </div>
-    <!-- </template> -->
-
-    <button id="addNew" onclick="addNew()">Add New</button>
+    <button id="addNew" class="shadow-2" onclick="addNew()">+</button>
 
     <template>
-      <div class="card">
+      <div class="card shadow-1">
         <div>
           <a href="#">
             <img src="https://placehold.it/320x150">
@@ -138,21 +128,23 @@
         </div>
 
         <div class="title-block">
-          <h1 id="templateTitle">title</h1>
-          <h2>description</h2>
+          <h1 contenteditable>title</h1>
+          <h2 contenteditable>description</h2>
         </div>
         <div class="line-break"></div>
         <!-- <progress value="80" max="100"></progress> -->
         <div class="table">
           <div>
-            <div class="kpi">KPI</div>
-            <h2 class="metric">metric</h2>
+            <div class="kpi" contenteditable>KPI</div>
+            <h2 class="metric" contenteditable>metric</h2>
           </div>
           <div>
-            <div class="kpi">KPI</div>
-            <h2 class="metric">metric</h2>
+            <div class="kpi" contenteditable>KPI</div>
+            <h2 class="metric" contenteditable>metric</h2>
           </div>
         </div>
+        <button onclick="save(event)">Save</button>
+        <button onclick="removeThis(event)">Delete</button>
       </div>
     </template>
 
@@ -170,38 +162,28 @@
       firebase.initializeApp(config);
       var firestore = firebase.firestore();
       const db = firestore.collection("mobileApps");
-      const docRef = firestore.collection("mobileApps").doc("warranty");
-
-      const linkRef = document.querySelector("#link");
-      const imageRef = document.querySelector("#image");
-      const titleRef = document.querySelector("#title");
-      const descriptionRef = document.querySelector("#description");
-      const primaryKpiRef = document.querySelector("#primaryKPI");
-      const primaryMetricRef = document.querySelector("#primaryMetric");
-      const secondaryKpiRef = document.querySelector("#secondaryKPI");
-      const secondaryMetricRef = document.querySelector("#secondaryMetric");
 
       firestore.collection("mobileApps").get().then((querySnapshot) => {
           querySnapshot.forEach((doc) => {
-//              console.log(`${doc.id}`);
               var currentID = `${doc.id}`;
-//              console.log(db.doc(currentID).id);
 
             db.doc(currentID).get().then(function (doc) {
               if (doc && doc.exists) {
                 var newData = doc.data();
 
-                var temp = document.getElementsByTagName("template")[0];
+                var temp = document.querySelector("template");
+
+                temp.content.querySelector(".card").id = currentID;
 
                 temp.content.querySelector("h1").textContent = newData.title;
                 temp.content.querySelector("h2").textContent = newData.description;
 
                 temp.content.querySelectorAll(".kpi")[0].textContent = newData.primaryKpi;
                 temp.content.querySelectorAll(".metric")[0].textContent = newData.primaryMetric;
-                temp.content.querySelectorAll(".kpi")[1].textContent = newData.seconadryKpi;
+                temp.content.querySelectorAll(".kpi")[1].textContent = newData.secondaryKpi;
                 temp.content.querySelectorAll(".metric")[1].textContent = newData.secondaryMetric;
 
-                // clone the entire node which was stored temporarily
+                // clone the entire node which was just stored temporarily
                 var clone = temp.content.cloneNode(true);
 
                 //Create a new node, based on the template:
@@ -215,46 +197,22 @@
             }).catch(function(error) {
               console.log("Error getting document:", error);
             });
-
-
-              // Populate UI with data
-              docRef.get().then(function (doc) {
-                if (doc && doc.exists) {
-                  const myData = doc.data();
-
-                  titleRef.innerText = myData.title;
-                  descriptionRef.innerText = myData.description;
-                  imageRef.src = myData.image;
-                  linkRef.href = myData.url;
-                  primaryKpiRef.innerText = myData.primaryKpi;
-                  primaryMetricRef.innerText = myData.primaryMetric;
-                  secondaryKpiRef.innerText = myData.secondaryKpi;
-                  secondaryMetricRef.innerText = myData.secondaryMetric;
-
-
-                } else {
-                  // doc.data() will be undefined in this case
-                  console.log("No such document!");
-                }
-              }).catch(function(error) {
-                console.log("Error getting document:", error);
-              });
           });
       });
 
+      function save(event) {
+        var item = event.target.parentNode;
+        var initiativeRef = firestore.collection("mobileApps").doc(item.id);
+        var tempTitleRef = document.querySelector('#'+item.id);
 
-      // Update data based on input
-      function save() {
-        var warrantyRef = firestore.collection("mobileApps").doc("warranty");
-
-        // Set fields of the mobileApps initiative 'Warranty'
-        return warrantyRef.update({
-          title: titleRef.innerText,
-          description: descriptionRef.innerText,
-          primaryKpi: primaryKpiRef.innerText,
-          primaryMetric: primaryMetricRef.innerText,
-          secondaryKpi: secondaryKpiRef.innerText,
-          secondaryMetric: secondaryMetricRef.innerText
+        // Set fields of the mobileApps initiative that was clicked
+        return initiativeRef.update({
+          title: tempTitleRef.querySelector("h1").textContent,
+          description: tempTitleRef.querySelector("h2").textContent,
+          primaryKpi: tempTitleRef.querySelectorAll(".kpi")[0].textContent,
+          primaryMetric: tempTitleRef.querySelectorAll(".metric")[0].textContent,
+          secondaryKpi: tempTitleRef.querySelectorAll(".kpi")[1].textContent,
+          secondaryMetric: tempTitleRef.querySelectorAll(".metric")[1].textContent
         })
                 .then(function() {
                   console.log("Document successfully updated!");
@@ -266,13 +224,58 @@
       }
 
       function removeThis(event) {
-        console.log(event.target.parentNode.id);
+        var item = event.target.parentNode.id;
+        var initiativeRef = firestore.collection("mobileApps").doc(item);
+
+        document.querySelector('body').removeChild(document.querySelector('#'+item));
+
+        initiativeRef.delete().then(function() {
+          console.log("Document successfully deleted!");
+        }).catch(function(error) {
+          console.error("Error removing document: ", error);
+        });
       }
 
       function addNew() {
         console.log("added a new item!");
+        var tempID = ("initiative" + Math.round(Math.random()*100000000).toString());
+        console.log("tempID = " + tempID);
+
+        firebase.firestore().collection("mobileApps").doc(tempID).set({
+          title: "Title",
+          description: "Description.",
+          primaryKpi: "KPI",
+          primaryMetric: "Metric",
+          secondaryKpi: "KPI",
+          secondaryMetric: "Metric"
+        })
+                .then(function() {
+                  console.log("Document successfully written!");
+                })
+                .catch(function(error) {
+                  console.error("Error writing document: ", error);
+                });
+
+        var temp = document.querySelector("template");
+
+        temp.content.querySelector(".card").id = (tempID);
+
+        temp.content.querySelector("h1").textContent = "Title";
+        temp.content.querySelector("h2").textContent = "Description.";
+
+        temp.content.querySelectorAll(".kpi")[0].textContent = "KPI";
+        temp.content.querySelectorAll(".metric")[0].textContent = "Metric";
+        temp.content.querySelectorAll(".kpi")[1].textContent = "KPI";
+        temp.content.querySelectorAll(".metric")[1].textContent = "Metric";
+
+        // clone the entire node which was stored temporarily
+        var clone = temp.content.cloneNode(true);
+
+        //Create a new node, based on the template:
+        card = document.importNode(clone, true);
+        //append the new node wherever you like:
+        document.body.appendChild(card);
       }
     </script>
-
   </body>
 </html>
