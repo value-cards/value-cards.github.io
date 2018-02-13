@@ -1,6 +1,32 @@
 <!DOCTYPE html>
 <html>
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="A universal language for value and priority">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Value Cards</title>
+
+<!-- Disable tap highlight on IE -->
+<meta name="msapplication-tap-highlight" content="no">
+<!--<link rel="icon" href="images/favicon.ico">-->
+
+<!-- Web Application Manifest -->
+<!--<link rel="manifest" href="manifest.json">-->
+
+<!-- Add to homescreen for Chrome on Android -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="ValueCards">
+<meta name="theme-color" content="#003b64">
+
+<!-- Add to homescreen for Safari on iOS -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ValueCards">
+<meta name="apple-mobile-web-app-status-bar-style" content="#003b64">
+
+<!-- Tile icon for Win8 -->
+<!-- <meta name="msapplication-TileColor" content="#003b64">
+<meta name="msapplication-navbutton-color" content="#003b64"> -->
   <body>
     <style>
       * {
@@ -33,7 +59,7 @@
         /* 64px for printing */
         /*margin: 64px auto;*/
         max-width: 320px;
-        padding-bottom: 16px;
+        padding-bottom: 10px;
       }
       .title-block {
         padding: 16px 16px 2px 16px;
@@ -62,6 +88,10 @@
       .flex {
         display: flex;
       }
+      .flex-strech {
+        -webkit-flex: 1; /* Safari 6.1+ */
+        flex: 1;
+      }
       .table {
         display: flex;
         padding-left: 16px;
@@ -89,6 +119,32 @@
         border-radius: 2px;
         font-size: 15px;
         text-transform: uppercase;
+        cursor: pointer;
+      }
+      .edit {
+        border: none;
+      }
+      .edit-visible {
+        margin-top: 0;
+        background: #fff;
+        border: none;
+        color: rgba(0,0,0,0);
+        transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+      }
+      .edit-visible:hover,.edit-visible:focus,.edit-visible:active {
+        color: rgba(0,0,0,0.9);
+      }
+      .show {
+        display: block;
+      }
+      .hide {
+        display: none;
+      }
+      .slide-down {
+        bottom: -64px;
+      }
+      .slide-up {
+        bottom: 16px;
       }
       #addNew {
         cursor: pointer;
@@ -100,8 +156,7 @@
         font-size: 32px;
         background-color: #003b64;
         position: fixed;
-        bottom: 32px;
-        right: 32px;
+        right: 16px;
         font-weight: 100;
         transition: all 0.3s cubic-bezier(.25,.8,.25,1);
         border: none;
@@ -109,15 +164,26 @@
       #addNew:hover {
         box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
       }
+      #toast {
+        position: fixed;
+        left: 16px;
+        background-color: #323232;
+        padding: 16px 24px;
+        color: #fff;
+        box-shadow: 0 7px 18px rgba(0,0,0,0.2);
+        border-radius: 2px;
+        transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+      }
     </style>
 
-    <header class="flex shadow-1">
-      <h1 id="header">Title</h1>
+    <header class="flex shadow-1" onclick="toggleAddButton()">
+      <img id="logo" src="">
+      <h1 id="header">Initiatives</h1>
     </header>
     <!-- <input type="checkbox" id="showDone" name="done" value="done"> -->
       <!-- <label for="showDone">Show Done</label> -->
 
-    <button id="addNew" class="shadow-2" onclick="addNew()">+</button>
+    <button id="addNew" class="shadow-2 slide-down" onclick="addNew()">+</button>
 
     <template>
       <div class="card shadow-1">
@@ -128,8 +194,8 @@
         </div>
 
         <div class="title-block">
-          <h1 contenteditable>title</h1>
-          <h2 contenteditable>description</h2>
+          <h1 contenteditable>Title</h1>
+          <h2 contenteditable>Description.</h2>
         </div>
         <div class="line-break"></div>
         <!-- <progress value="80" max="100"></progress> -->
@@ -138,16 +204,18 @@
             <div class="kpi" contenteditable>KPI</div>
             <h2 class="metric" contenteditable>metric</h2>
           </div>
-          <div>
+          <div class="flex-strech">
             <div class="kpi" contenteditable>KPI</div>
             <h2 class="metric" contenteditable>metric</h2>
           </div>
+          <button class="edit-visible" onclick="showEdit(event)">Edit</button>
         </div>
-        <button onclick="save(event)">Save</button>
-        <button onclick="removeThis(event)">Delete</button>
+        <button class="edit hide" onclick="save(event)">Save</button>
+        <button class="edit hide" onclick="removeThis(event)">Delete</button>
       </div>
     </template>
 
+    <div id="toast" class="slide-down">Initiative added!</div>
 
     <script src="https://www.gstatic.com/firebasejs/4.9.0/firebase.js"></script>
     <script src="https://www.gstatic.com/firebasejs/4.9.0/firebase-firestore.js"></script>
@@ -200,10 +268,25 @@
           });
       });
 
+      function toggleAddButton() {
+        document.querySelector('#addNew').classList.toggle('slide-down');
+        document.querySelector('#addNew').classList.toggle('slide-up');
+      }
+
+      function showEdit(event) {
+//        console.log("showing edit buttons!");
+        var saveButton = event.target.parentNode.parentNode.querySelectorAll('button')[1];
+        var deleteButton = event.target.parentNode.parentNode.querySelectorAll('button')[2];
+//        console.log(saveButton);
+//        console.log(deleteButton);
+        saveButton.classList.toggle('hide');
+        deleteButton.classList.toggle('hide');
+      }
+
       function save(event) {
-        var item = event.target.parentNode;
-        var initiativeRef = firestore.collection("mobileApps").doc(item.id);
-        var tempTitleRef = document.querySelector('#'+item.id);
+        var item = event.target.parentNode.id;
+        var initiativeRef = firestore.collection("mobileApps").doc(item);
+        var tempTitleRef = document.querySelector('#'+item);
 
         // Set fields of the mobileApps initiative that was clicked
         return initiativeRef.update({
@@ -216,6 +299,13 @@
         })
                 .then(function() {
                   console.log("Document successfully updated!");
+                  document.querySelector('#toast').innerText = "Save successful!";
+                  document.querySelector('#toast').classList.toggle('slide-down');
+                  document.querySelector('#toast').classList.toggle('slide-up');
+                  setTimeout(function(){
+                    document.querySelector('#toast').classList.toggle('slide-down');
+                    document.querySelector('#toast').classList.toggle('slide-up');
+                  }, 2000);
                 })
                 .catch(function(error) {
                   // The document probably doesn't exist.
@@ -231,15 +321,22 @@
 
         initiativeRef.delete().then(function() {
           console.log("Document successfully deleted!");
+          document.querySelector('#toast').innerText = "Initiative successfully deleted!";
+          document.querySelector('#toast').classList.toggle('slide-down');
+          document.querySelector('#toast').classList.toggle('slide-up');
+          setTimeout(function(){
+            document.querySelector('#toast').classList.toggle('slide-down');
+            document.querySelector('#toast').classList.toggle('slide-up');
+          }, 2000);
         }).catch(function(error) {
           console.error("Error removing document: ", error);
         });
       }
 
       function addNew() {
-        console.log("added a new item!");
+//        console.log("added a new item!");
         var tempID = ("initiative" + Math.round(Math.random()*100000000).toString());
-        console.log("tempID = " + tempID);
+//        console.log("tempID = " + tempID);
 
         firebase.firestore().collection("mobileApps").doc(tempID).set({
           title: "Title",
@@ -250,7 +347,14 @@
           secondaryMetric: "Metric"
         })
                 .then(function() {
-                  console.log("Document successfully written!");
+//                  console.log("Document successfully written!");
+                  document.querySelector('#toast').innerText = "New initiative created!";
+                  document.querySelector('#toast').classList.toggle('slide-down');
+                  document.querySelector('#toast').classList.toggle('slide-up');
+                  setTimeout(function(){
+                    document.querySelector('#toast').classList.toggle('slide-down');
+                    document.querySelector('#toast').classList.toggle('slide-up');
+                  }, 2000);
                 })
                 .catch(function(error) {
                   console.error("Error writing document: ", error);
@@ -264,9 +368,9 @@
         temp.content.querySelector("h2").textContent = "Description.";
 
         temp.content.querySelectorAll(".kpi")[0].textContent = "KPI";
-        temp.content.querySelectorAll(".metric")[0].textContent = "Metric";
-        temp.content.querySelectorAll(".kpi")[1].textContent = "KPI";
-        temp.content.querySelectorAll(".metric")[1].textContent = "Metric";
+        temp.content.querySelectorAll(".metric")[0].textContent = "metric";
+        temp.content.querySelectorAll(".kpi")[1].textContent = "";
+        temp.content.querySelectorAll(".metric")[1].textContent = "";
 
         // clone the entire node which was stored temporarily
         var clone = temp.content.cloneNode(true);
