@@ -183,7 +183,7 @@
     <button id="addNew" class="shadow-2 slide-down" onclick="addNew()">+</button>
 
     <template>
-      <div class="card shadow-1">
+      <div id="${cardId}" class="card shadow-1">
         <div>
           <a href="#">
             <img src="https://placehold.it/320x150">
@@ -191,19 +191,19 @@
         </div>
 
         <div class="title-block">
-          <h1 contenteditable>Title</h1>
-          <h2 contenteditable>Description.</h2>
+          <h1 contenteditable>${title}</h1>
+          <h2 contenteditable>${description}</h2>
         </div>
         <div class="line-break"></div>
         <!-- <progress value="80" max="100"></progress> -->
         <div class="table">
           <div>
-            <div class="kpi" contenteditable>KPI</div>
-            <h2 class="metric" contenteditable>metric</h2>
+            <div class="kpi" contenteditable>${primaryKpi}</div>
+            <h2 class="metric" contenteditable>${primaryMetric}</h2>
           </div>
           <div class="flex-strech">
-            <div class="kpi" contenteditable>KPI</div>
-            <h2 class="metric" contenteditable>metric</h2>
+            <div class="kpi" contenteditable>${secondaryKpi}</div>
+            <h2 class="metric" contenteditable>${secondaryMetric}</h2>
           </div>
           <button class="edit-visible" onclick="showEdit(event)">Edit</button>
         </div>
@@ -218,6 +218,13 @@
     <script src="https://www.gstatic.com/firebasejs/4.9.0/firebase-firestore.js"></script>
 
     <script>
+
+      String.prototype.interpolate = function(params) {
+        const names = Object.keys(params);
+        const vals = Object.values(params);
+        return new Function(...names, `return \`${this}\`;`)(...vals);
+      }
+
       // Initialize Firebase
       var config = {
         apiKey: "",
@@ -229,40 +236,19 @@
       const db = firestore.collection("sample");
 
       firestore.collection("sample").get().then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-              var currentID = `${doc.id}`;
+        querySnapshot.forEach((doc) => {
+          var currentID = `${doc.id}`;
 
-            db.doc(currentID).get().then(function (doc) {
-              if (doc && doc.exists) {
-                var newData = doc.data();
-
-                var temp = document.querySelector("template");
-
-                temp.content.querySelector(".card").id = currentID;
-
-                temp.content.querySelector("h1").textContent = newData.title;
-                temp.content.querySelector("h2").textContent = newData.description;
-
-                temp.content.querySelectorAll(".kpi")[0].textContent = newData.primaryKpi;
-                temp.content.querySelectorAll(".metric")[0].textContent = newData.primaryMetric;
-                temp.content.querySelectorAll(".kpi")[1].textContent = newData.secondaryKpi;
-                temp.content.querySelectorAll(".metric")[1].textContent = newData.secondaryMetric;
-
-                // clone the entire node which was just stored temporarily
-                var clone = temp.content.cloneNode(true);
-
-                //Create a new node, based on the template:
-                card = document.importNode(clone, true);
-                //append the new node wherever you like:
-                document.body.appendChild(card);
-              }  else {
-                // doc.data() will be undefined in this case
-                console.log("No such document!");
-              }
-            }).catch(function(error) {
-              console.log("Error getting document:", error);
-            });
+          db.doc(currentID).get().then(function (doc) {
+            if (doc && doc.exists) {
+              var template = document.querySelector("template").cloneNode(true);
+              template.innerHTML = template.innerHTML.interpolate(Object.assign(doc.data(), { cardId: currentID }));
+              document.body.appendChild(document.importNode(template.content, true));
+            }
+          }).catch(function(error) {
+            console.error("Error getting document:", error);
           });
+        });
       });
 
       function toggleAddButton() {
