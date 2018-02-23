@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="A universal language for value and priority">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title></title>
+
+<!-- Disable tap highlight on IE -->
+<meta name="msapplication-tap-highlight" content="no">
+<!--<link rel="icon" href="images/favicon.ico">-->
+
+<!-- Web Application Manifest -->
+<!--<link rel="manifest" href="manifest.json">-->
+
+<!-- Add to homescreen for Chrome on Android -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="ValueCards">
+<meta name="theme-color" content="#003b64">
+
+<!-- Add to homescreen for Safari on iOS -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Value Cards">
+<meta name="apple-mobile-web-app-status-bar-style" content="#003b64">
+
+<!-- Tile icon for Win8 -->
+<!-- <meta name="msapplication-TileColor" content="#003b64">
+<meta name="msapplication-navbutton-color" content="#003b64"> -->
+<body>
+<style>
+  * {
+    font-family: 'Roboto', 'Avenir Next', 'Avenir', 'Open Sans', Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    margin: 0;
+    background-color: #fafafa;
+  }
+  .shadow-1 {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  }
+  .shadow-2 {
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  }
+  header, #header {
+    background-color: #003b64;
+    color: #fff;
+    padding: 8px;
+    text-align: left;
+    font-size: 18px;
+    font-weight: 300;
+  }
+  .card {
+    color: #090909;
+    background-color: #fff;
+    outline: 1px solid #ccc;
+    text-align: center;
+    margin: 32px auto;
+    /* 64px for printing */
+    /*margin: 64px auto;*/
+    max-width: 320px;
+    padding-bottom: 10px;
+  }
+  .title-block {
+    padding: 16px 16px 2px 16px;
+  }
+  h1, h2, .table, h3, h4{
+    text-align: left;
+    margin: 0;
+  }
+  h1 {
+    font-weight: 400;
+    font-size: 24px;
+    padding-bottom: 8px;
+  }
+  h2, .type {
+    font-weight: 300;
+    font-size: 14px;
+    color: #9B9B9B;
+  }
+  #logo {
+    margin: auto 0;
+    height: 22px;
+    width: 36px;
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+  .flex {
+    display: flex;
+  }
+  .flex-strech {
+    -webkit-flex: 1; /* Safari 6.1+ */
+    flex: 1;
+  }
+  .table, .teams {
+    display: flex;
+    padding-left: 16px;
+  }
+  .table>div:first-child {
+    margin-right: 32px;
+  }
+  .teams>div {
+    margin-right: 24px;
+  }
+  .outline {
+    text-align: center;
+    border: 0.5px solid #ccc;
+    padding: 8px 8px 4px 8px;
+    min-width: 24px;
+    min-height: 24px;
+    margin-right:0;
+    /*min-height: 32px;*/
+  }
+  .team {
+    padding-top: 8px;
+  }
+  .t1 {
+    margin-bottom: 12px;
+  }
+  .kpi, .value {
+    font-weight: 500;
+  }
+  progress {
+    width: 100%;
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+  .line-break {
+    border: 0.5px solid #ccc;
+    margin-top: 16px;
+    margin-bottom: 16px;
+  }
+  button {
+    width: 25%;
+    height: 40px;
+    margin-top: 8px;
+    border-radius: 2px;
+    font-size: 15px;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  input {
+    margin-top: 4px;
+  }
+  .edit {
+    border: none;
+  }
+  .edit-visible {
+    margin-top: 0;
+    /*background: #fff;*/
+    background-color: transparent;
+    border: none;
+    color: rgba(0,0,0,0);
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  }
+  .edit-visible:hover,.edit-visible:focus,.edit-visible:active {
+    color: rgba(0,0,0,0.9);
+  }
+  .show {
+    display: block;
+  }
+  .hide {
+    display: none;
+  }
+  .slide-down {
+    bottom: -64px;
+  }
+  .slide-up {
+    bottom: 16px;
+  }
+  #addNew {
+    cursor: pointer;
+    padding: 8px 16px;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 32px;
+    background-color: #003b64;
+    position: fixed;
+    right: 16px;
+    font-weight: 100;
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    border: none;
+  }
+  #addNew:hover {
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+  }
+  #toast {
+    position: fixed;
+    left: 16px;
+    background-color: #323232;
+    padding: 16px 24px;
+    color: #fff;
+    box-shadow: 0 7px 18px rgba(0,0,0,0.2);
+    border-radius: 2px;
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  }
+
+  .card.over {
+    border: 2px dashed #000;
+  }
+</style>
+
+<header class="flex shadow-1 hide" onclick="toggleAddButton()">
+<!--<img id="logo" src="">-->
+  <h1 id="header"></h1>
+</header>
+<!-- <input type="checkbox" id="showDone" name="done" value="done"> -->
+<!-- <label for="showDone">Show Done</label> -->
+<!--<select>-->
+  <!--<option value="team">Team 1</option>-->
+<!--</select>-->
+
+
+<button id="addNew" class="shadow-2 slide-down" onclick="addNew()">+</button>
+
+
+<template>
+  <div class="card shadow-1" draggable="true">
+    <div class="title-block">
+      <h1 contenteditable>Title</h1>
+      <h2 contenteditable>Description.</h2>
+    </div>
+    <div class="line-break"></div>
+    <div class="table">
+      <div>
+        <div class="kpi" contenteditable>KPI</div>
+        <h2 class="metric" contenteditable>metric</h2>
+      </div>
+      <div class="flex-strech">
+        <div class="kpi" contenteditable>KPI</div>
+        <h2 class="metric" contenteditable>metric</h2>
+      </div>
+      <button class="edit-visible" onclick="showEdit(event)">Edit</button>
+    </div>
+    <button class="edit hide" onclick="save(event)">Save</button>
+    <button class="edit hide" onclick="removeThis(event)">Delete</button>
+    <div class="table edit hide options">
+      <div>
+        <h3 class="value" contenteditable>5</h3>
+        <h4 class="type">priority</h4>
+      </div>
+      <input type="color" value="#ffffff" onchange="updateColour(event)">
+    </div>
+  </div>
+</template>
+
+<div id="toast" class="slide-down">Initiative added!</div>
+
+<script async src="js/DragDropTouch.js"></script>
+<script src="https://www.gstatic.com/firebasejs/4.9.0/firebase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/4.9.0/firebase-firestore.js"></script>
+
+<script>
+  const teamName = "sample";
+
+  // Populate UI using team name
+  const properName = teamName.replace(/([A-Z])/g, ' $1').replace(/^./, function(str){ return str.toUpperCase(); });
+  document.title = 'Team Initiatives | ' + properName;
+  document.querySelector('#header').innerText = 'Team Initiatives | ' + properName;
+
+  // Initialize Firebase
+  var config = {
+    authDomain: "initiative-list.firebaseapp.com",
+    projectId: "initiative-list"
+  };
+  firebase.initializeApp(config);
+  var firestore = firebase.firestore();
+  const db = firestore.collection(teamName);
+
+  firestore.collection(teamName).orderBy("priority").get().then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+      var currentID = `${doc.id}`;
+
+      db.doc(currentID).get().then(function (doc) {
+        if (doc && doc.exists) {
+          var newData = doc.data();
+
+          var temp = document.querySelector("template");
+
+          temp.content.querySelector(".card").id = currentID;
+
+          temp.content.querySelector("h1").textContent = newData.title;
+          temp.content.querySelector("h2").textContent = newData.description;
+
+          temp.content.querySelectorAll(".kpi")[0].textContent = newData.primaryKpi;
+          temp.content.querySelectorAll(".metric")[0].textContent = newData.primaryMetric;
+          temp.content.querySelectorAll(".kpi")[1].textContent = newData.secondaryKpi;
+          temp.content.querySelectorAll(".metric")[1].textContent = newData.secondaryMetric;
+          temp.content.querySelector(".value").textContent = newData.priority;
+          temp.content.querySelector("input").value = newData.colour;
+          temp.content.querySelector(".card").style.backgroundColor = newData.colour;
+          temp.content.querySelectorAll('button')[0].style.backgroundColor = 'transparent';
+          temp.content.querySelectorAll('button')[1].style.backgroundColor = 'transparent';
+          temp.content.querySelectorAll('button')[2].style.backgroundColor = 'transparent';
+          temp.content.querySelectorAll('button')[1].style.color = newData.textColour;
+          temp.content.querySelectorAll('button')[2].style.color = newData.textColour;
+          temp.content.querySelector(".card").style.color = newData.textColour;
+          temp.content.querySelector(".card").querySelectorAll('h2')[0].style.color = newData.textColour;
+          temp.content.querySelector(".card").querySelectorAll('h2')[1].style.color = newData.textColour;
+          temp.content.querySelector(".card").querySelectorAll('h2')[2].style.color = newData.textColour;
+          temp.content.querySelector(".card").querySelector('h4').style.color = newData.textColour;
+
+          // clone the entire node which was just stored temporarily
+          var clone = temp.content.cloneNode(true);
+
+          //Create a new node, based on the template:
+          card = document.importNode(clone, true);
+          //append the new node wherever you like:
+          document.body.appendChild(card);
+        }  else {
+          // doc.data() will be undefined in this case
+          console.log("No such document!");
+        }
+      }).catch(function(error) {
+        console.log("Error getting document:", error);
+      });
+    });
+  });
+
+  function toggleAddButton() {
+    document.querySelector('#addNew').classList.toggle('slide-down');
+    document.querySelector('#addNew').classList.toggle('slide-up');
+  }
+
+  function showEdit(event) {
+    var saveButton = event.target.parentNode.parentNode.querySelectorAll('button')[1];
+    var deleteButton = event.target.parentNode.parentNode.querySelectorAll('button')[2];
+    var options = event.target.parentNode.parentNode.querySelector('.options');
+    saveButton.classList.toggle('hide');
+    deleteButton.classList.toggle('hide');
+    options.classList.toggle('hide');
+  }
+
+  function updateColour(event) {
+    var chosenColour = event.target.parentNode.parentNode.querySelector('input').value;
+    var textColour = getCorrectTextColour(chosenColour.substr(1,6));
+    setCorrectTextColour(event, textColour, chosenColour);
+  }
+
+  function getCorrectTextColour(hex){
+
+    threshold = 200; /* about half of 256. Lower threshold equals more dark text on dark background  */
+
+    hRed = hexToR(hex);
+    hGreen = hexToG(hex);
+    hBlue = hexToB(hex);
+
+
+    function hexToR(h) {return parseInt((cutHex(h)).substring(0,2),16)}
+    function hexToG(h) {return parseInt((cutHex(h)).substring(2,4),16)}
+    function hexToB(h) {return parseInt((cutHex(h)).substring(4,6),16)}
+    function cutHex(h) {return (h.charAt(0)=="#") ? h.substring(1,7):h}
+
+    cBrightness = ((hRed * 299) + (hGreen * 587) + (hBlue * 114)) / 1000;
+    if (cBrightness > threshold){return "#090909";} else { return "#ffffff";}
+  }
+
+  function setCorrectTextColour (event, textColour, chosenColour) {
+    event.target.parentNode.parentNode.style.backgroundColor = chosenColour;
+    event.target.parentNode.parentNode.style.color = textColour;
+    event.target.parentNode.parentNode.querySelectorAll('h2')[0].style.color = textColour;
+    event.target.parentNode.parentNode.querySelectorAll('h2')[1].style.color = textColour;
+    event.target.parentNode.parentNode.querySelectorAll('h2')[2].style.color = textColour;
+    event.target.parentNode.parentNode.querySelector('h4').style.color = textColour;
+    event.target.parentNode.parentNode.querySelectorAll('button')[0].style.transition = "none";
+    event.target.parentNode.parentNode.querySelectorAll('button')[0].style.backgroundColor = chosenColour;
+    event.target.parentNode.parentNode.querySelectorAll('button')[0].style.color = textColour;
+    event.target.parentNode.parentNode.querySelectorAll('button')[1].style.backgroundColor = 'transparent';
+    event.target.parentNode.parentNode.querySelectorAll('button')[2].style.backgroundColor = 'transparent';
+    event.target.parentNode.parentNode.querySelectorAll('button')[0].style.backgroundColor = 'transparent';
+    event.target.parentNode.parentNode.querySelectorAll('button')[1].style.color = textColour;
+    event.target.parentNode.parentNode.querySelectorAll('button')[2].style.color = textColour;
+  }
+
+  function toggleToast(message) {
+    document.querySelector('#toast').innerText = message;
+    document.querySelector('#toast').classList.toggle('slide-down');
+    document.querySelector('#toast').classList.toggle('slide-up');
+    setTimeout(function(){
+      document.querySelector('#toast').classList.toggle('slide-down');
+      document.querySelector('#toast').classList.toggle('slide-up');
+    }, 2000);
+  }
+
+  function save(event) {
+    var item = event.target.parentNode.id;
+    var initiativeRef = firestore.collection(teamName).doc(item);
+    var tempTitleRef = document.querySelector('#'+item);
+
+    // Set fields of the mobileApps initiative that was clicked
+    return initiativeRef.update({
+      title: tempTitleRef.querySelector("h1").textContent,
+      description: tempTitleRef.querySelector("h2").textContent,
+      primaryKpi: tempTitleRef.querySelectorAll(".kpi")[0].textContent,
+      primaryMetric: tempTitleRef.querySelectorAll(".metric")[0].textContent,
+      secondaryKpi: tempTitleRef.querySelectorAll(".kpi")[1].textContent,
+      secondaryMetric: tempTitleRef.querySelectorAll(".metric")[1].textContent,
+      priority: tempTitleRef.querySelector(".value").textContent,
+      colour: tempTitleRef.querySelector("input").value,
+      textColour: tempTitleRef.querySelector("h2").style.color
+    })
+            .then(function() {
+              console.log("Document successfully updated!");
+              toggleToast("Save successful!");
+            })
+            .catch(function(error) {
+              // The document probably doesn't exist.
+              console.error("Error updating document: ", error);
+              toggleToast("Sorry, something went wrong saving. Please try again.");
+            });
+  }
+
+  function removeThis(event) {
+    var item = event.target.parentNode.id;
+    var initiativeRef = firestore.collection(teamName).doc(item);
+
+    document.querySelector('body').removeChild(document.querySelector('#'+item));
+
+    initiativeRef.delete().then(function() {
+      console.log("Document successfully deleted!");
+      toggleToast("Initiative successfully deleted!");
+    }).catch(function(error) {
+      console.error("Error removing document: ", error);
+      toggleToast("Sorry, something went wrong removing this initiative. Please try again.");
+    });
+  }
+
+  function addNew() {
+    var tempID = ("initiative" + Math.round(Math.random()*100000000).toString());
+
+    firebase.firestore().collection(teamName).doc(tempID).set({
+      title: "Title",
+      description: "Description.",
+      primaryKpi: "KPI",
+      primaryMetric: "Metric",
+      secondaryKpi: "KPI",
+      secondaryMetric: "Metric"
+    })
+            .then(function() {
+//                  console.log("Document successfully written!");
+              toggleToast("New initiative created!");
+            })
+            .catch(function(error) {
+              console.error("Error writing document: ", error);
+              toggleToast("Sorry, there was a problem creating a new initiative. Please try again.");
+            });
+
+    var temp = document.querySelector("template");
+
+    temp.content.querySelector(".card").id = (tempID);
+
+    temp.content.querySelector("h1").textContent = "Title";
+    temp.content.querySelector("h2").textContent = "Description.";
+
+    temp.content.querySelectorAll(".kpi")[0].textContent = "KPI";
+    temp.content.querySelectorAll(".metric")[0].textContent = "metric";
+    temp.content.querySelectorAll(".kpi")[1].textContent = "";
+    temp.content.querySelectorAll(".metric")[1].textContent = "";
+
+    // clone the entire node which was stored temporarily
+    var clone = temp.content.cloneNode(true);
+
+    //Create a new node, based on the template:
+    card = document.importNode(clone, true);
+    //append the new node wherever you like:
+    document.body.appendChild(card);
+  }
+
+  // Hide toolbar if embedded as a component
+  var urlParam = window.location.search;
+  if (urlParam != ('?embed')) {
+    document.querySelector('header').classList.remove('hide');
+  }
+
+  //Drag and drop
+
+  var dragSrcEl = null;
+
+  function handleDragStart(e) {
+    // Target (this) element is the source node.
+//    this.style.opacity = '0.4';
+
+    dragSrcEl = this;
+
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', this.innerHTML);
+
+//    console.log('dragging ' + e.target.id);
+  }
+
+  function handleDragOver(e) {
+    if (e.preventDefault) {
+      e.preventDefault(); // Necessary. Allows us to drop.
+    }
+
+    e.dataTransfer.dropEffect = 'move';  // See the section on the DataTransfer object.
+
+    return false;
+  }
+
+  function handleDragEnter(e) {
+    // this / e.target is the current hover target.
+    this.classList.add('over');
+//    console.log('dragging over ' + this.id);
+//    console.log(e.target);
+  }
+
+  function handleDragLeave(e) {
+    this.classList.remove('over');  // this / e.target is previous target element.
+  }
+
+  function handleDrop(e) {
+    // this/e.target is current target element.
+
+    if (e.stopPropagation) {
+      e.stopPropagation(); // Stops some browsers from redirecting.
+    }
+
+
+    // Don't do anything if dropping the same column we're dragging.
+    if (dragSrcEl != this) {
+      // Set the source column's HTML to the HTML of the column we dropped on.
+      var newID = this.id;
+      var srcID = dragSrcEl.id;
+      dragSrcEl.innerHTML = this.innerHTML;
+      dragSrcEl.id = newID;
+      this.id = srcID;
+      this.innerHTML = e.dataTransfer.getData('text/html');
+
+      var cards = document.querySelectorAll('.card');
+      var iterator;
+      for (iterator = 1; iterator < cards.length; iterator++) {
+        if (srcID == cards[iterator].id) {
+          document.querySelector('#'+srcID).querySelector('.value').innerText = iterator;
+        }
+      }
+    }
+    return false;
+  }
+
+  function handleDragEnd(e) {
+    // this/e.target is the source node.
+    var cards = document.querySelectorAll('.card');
+    [].forEach.call(cards, function (card) {
+      card.classList.remove('over');
+    });
+  }
+
+  setTimeout(function() {
+    var cards = document.querySelectorAll('.card');
+    if (cards.length > 0) {
+      console.log('loaded list!');
+      toggleToast('App initialized!');
+    }
+    [].forEach.call(cards, function(card) {
+      card.addEventListener('dragstart', handleDragStart, false);
+      card.addEventListener('dragenter', handleDragEnter, false);
+      card.addEventListener('dragover', handleDragOver, false);
+      card.addEventListener('dragleave', handleDragLeave, false);
+      card.addEventListener('drop', handleDrop, false);
+      card.addEventListener('dragend', handleDragEnd, false);
+    });
+  }, 1000);
+</script>
+</body>
+</html>
